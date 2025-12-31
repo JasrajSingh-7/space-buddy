@@ -2,95 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Shunya Design System - Deep Space Aesthetic
+   All colors are HSL for proper theming.
+   
+   Color Palette:
+   - Deep Void (#0B0E14): Background - hsl(220, 33%, 6%)
+   - Moon Rock (#1E293B): Cards/UI elements - hsl(217, 33%, 17%)
+   - Starlight (#E2E8F0): Primary text - hsl(214, 32%, 91%)
+   - Pale Nebula (#38BDF8): Accent/highlights - hsl(199, 89%, 60%)
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Deep Void - Primary background */
+    --background: 220 33% 6%;
+    --foreground: 214 32% 91%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Moon Rock - Cards and elevated surfaces */
+    --card: 217 33% 12%;
+    --card-foreground: 214 32% 91%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 217 33% 10%;
+    --popover-foreground: 214 32% 91%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Pale Nebula - Primary accent */
+    --primary: 199 89% 60%;
+    --primary-foreground: 220 33% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Moon Rock - Secondary elements */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 214 32% 91%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted states */
+    --muted: 217 33% 14%;
+    --muted-foreground: 214 20% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - matches primary for consistency */
+    --accent: 199 89% 60%;
+    --accent-foreground: 220 33% 6%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive - warm red for errors */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 214 32% 91%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs */
+    --border: 217 33% 20%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Sidebar */
+    --sidebar-background: 220 33% 5%;
+    --sidebar-foreground: 214 32% 91%;
+    --sidebar-primary: 199 89% 60%;
+    --sidebar-primary-foreground: 220 33% 6%;
+    --sidebar-accent: 217 33% 14%;
+    --sidebar-accent-foreground: 214 32% 91%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 199 89% 60%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Custom Shunya tokens */
+    --deep-void: 220 33% 6%;
+    --moon-rock: 217 33% 17%;
+    --starlight: 214 32% 91%;
+    --pale-nebula: 199 89% 60%;
+    
+    /* Additional accent colors from PRD */
+    --cosmic-purple: 262 83% 58%;
+    --stellar-gold: 38 92% 50%;
+    --nebula-pink: 330 81% 60%;
+    --galaxy-green: 160 84% 39%;
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Glassmorphism effects */
+    --glass-bg: 217 33% 15%;
+    --glass-border: 217 33% 25%;
   }
 
+  /* Dark mode is the default and only mode for Shunya */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 220 33% 6%;
+    --foreground: 214 32% 91%;
+    --card: 217 33% 12%;
+    --card-foreground: 214 32% 91%;
+    --popover: 217 33% 10%;
+    --popover-foreground: 214 32% 91%;
+    --primary: 199 89% 60%;
+    --primary-foreground: 220 33% 6%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 214 32% 91%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 214 20% 60%;
+    --accent: 199 89% 60%;
+    --accent-foreground: 220 33% 6%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 214 32% 91%;
+    --border: 217 33% 20%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 60%;
+    --sidebar-background: 220 33% 5%;
+    --sidebar-foreground: 214 32% 91%;
+    --sidebar-primary: 199 89% 60%;
+    --sidebar-primary-foreground: 220 33% 6%;
+    --sidebar-accent: 217 33% 14%;
+    --sidebar-accent-foreground: 214 32% 91%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 199 89% 60%;
   }
 }
 
@@ -99,7 +116,146 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  html {
+    @apply scroll-smooth;
   }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Typography scale */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+
+  /* Code/technical text */
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card effect */
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-md border border-border/40 rounded-xl;
+  }
+
+  /* Glowing accent effect */
+  .glow-accent {
+    box-shadow: 0 0 20px hsl(var(--pale-nebula) / 0.3);
+  }
+
+  /* Star field background pattern */
+  .star-field {
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, hsl(var(--starlight) / 0.4), transparent),
+      radial-gradient(2px 2px at 40px 70px, hsl(var(--starlight) / 0.3), transparent),
+      radial-gradient(1px 1px at 90px 40px, hsl(var(--starlight) / 0.5), transparent),
+      radial-gradient(2px 2px at 130px 80px, hsl(var(--starlight) / 0.4), transparent),
+      radial-gradient(1px 1px at 160px 120px, hsl(var(--starlight) / 0.6), transparent);
+    background-size: 200px 200px;
+  }
+
+  /* Gradient text effect */
+  .gradient-text {
+    @apply bg-gradient-to-r from-pale-nebula via-cosmic-purple to-nebula-pink bg-clip-text text-transparent;
+  }
+
+  /* Bottom navigation safe area */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Touch-friendly button sizing */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+@layer utilities {
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  /* Slide up animation */
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  /* Pulse glow animation */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Twinkle animation for stars */
+  .animate-twinkle {
+    animation: twinkle 3s ease-in-out infinite;
+  }
+}
+
+/* Keyframe animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px hsl(var(--pale-nebula) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px hsl(var(--pale-nebula) / 0.6);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-secondary rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-primary/30 text-foreground;
 }
