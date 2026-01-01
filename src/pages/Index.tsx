@@ -1,133 +1,154 @@
-import { Star, Telescope, Globe2, Sparkles, Clock } from "lucide-react";
+import { AppHeader } from "@/components/AppHeader";
+import { BottomNav } from "@/components/BottomNav";
+import { CategoryCard } from "@/components/CategoryCard";
+import { DailyFactCard } from "@/components/DailyFactCard";
+import { DiscoveryCard } from "@/components/DiscoveryCard";
+import { useCategories } from "@/hooks/useCategories";
+import { useFeaturedObject, useRecentObjects } from "@/hooks/useCelestialObjects";
+import { getCategoryIcon } from "@/lib/icons";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Shuffle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
-  const categories = [
-    { icon: Globe2, label: "Planets", count: 8 },
-    { icon: Star, label: "Stars", count: "∞" },
-    { icon: Sparkles, label: "Galaxies", count: "2T+" },
-    { icon: Telescope, label: "Nebulas", count: "3K+" },
-  ];
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: featuredObject, isLoading: featuredLoading } = useFeaturedObject();
+  const { data: recentObjects, isLoading: recentLoading } = useRecentObjects(10);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground pb-20">
       {/* Star field background */}
       <div className="fixed inset-0 star-field opacity-30 pointer-events-none" />
-      
+
       {/* Header */}
-      <header className="relative z-10 px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pale-nebula via-cosmic-purple to-nebula-pink flex items-center justify-center">
-            <Telescope className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="font-heading font-semibold text-xl">Shunya</span>
-        </div>
-        <button className="touch-target flex items-center justify-center rounded-full bg-secondary/60 backdrop-blur-sm">
-          <Star className="w-5 h-5" />
-        </button>
-      </header>
+      <AppHeader />
 
       {/* Main content */}
-      <main className="relative z-10 px-4 pb-24">
+      <main className="relative z-10 px-4 py-6">
         {/* Hero Section - Daily Fact */}
-        <section className="mb-8 animate-fade-in">
-          <div className="glass-card p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pale-nebula/20 to-cosmic-purple/20 rounded-full blur-3xl" />
-            <span className="text-2xs uppercase tracking-wider text-pale-nebula font-medium">Daily Discovery</span>
-            <h1 className="font-heading text-2xl font-semibold mt-2 mb-3">
-              The Andromeda Galaxy
-            </h1>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              At 2.537 million light-years away, Andromeda is the nearest major galaxy to our Milky Way and is on a collision course with us.
-            </p>
-            <div className="flex items-center gap-2 mt-4 text-2xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>Discovered 964 AD by Abd al-Rahman al-Sufi</span>
+        <section className="mb-8">
+          {featuredLoading ? (
+            <div className="glass-card p-6">
+              <Skeleton className="h-4 w-24 mb-3" />
+              <Skeleton className="h-8 w-3/4 mb-3" />
+              <Skeleton className="h-16 w-full mb-4" />
+              <Skeleton className="h-4 w-1/2" />
             </div>
-          </div>
+          ) : featuredObject ? (
+            <DailyFactCard object={featuredObject} />
+          ) : (
+            <div className="glass-card p-6 text-center">
+              <p className="text-muted-foreground">No featured discovery today</p>
+            </div>
+          )}
         </section>
 
         {/* Categories */}
         <section className="mb-8">
-          <h2 className="font-heading text-lg font-semibold mb-4">Explore</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {categories.map((category, index) => (
-              <button
-                key={category.label}
-                className="glass-card p-4 text-left transition-all hover:border-pale-nebula/40 hover:glow-accent group"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <category.icon className="w-6 h-6 text-pale-nebula mb-3 group-hover:animate-pulse-glow" />
-                <h3 className="font-heading font-medium">{category.label}</h3>
-                <span className="text-2xs text-muted-foreground">{category.count} objects</span>
-              </button>
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-heading text-lg font-semibold">Explore</h2>
+            <Link to="/categories" className="text-2xs text-pale-nebula hover:underline">
+              View all
+            </Link>
           </div>
+          
+          {categoriesLoading ? (
+            <div className="grid grid-cols-2 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="glass-card p-4">
+                  <Skeleton className="w-10 h-10 rounded-lg mb-3" />
+                  <Skeleton className="h-5 w-20 mb-1" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {categories?.slice(0, 4).map((category, index) => (
+                <CategoryCard
+                  key={category.id}
+                  name={category.name}
+                  slug={category.slug}
+                  objectCount={category.object_count}
+                  icon={getCategoryIcon(category.icon_name || category.slug)}
+                  animationDelay={index * 100}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Recent Discoveries */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-heading text-lg font-semibold">Recent Discoveries</h2>
-            <button className="text-2xs text-pale-nebula">View all</button>
+            <Link to="/search" className="text-2xs text-pale-nebula hover:underline">
+              View all
+            </Link>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-            {["TOI-700 d", "Betelgeuse Dimming", "James Webb First Light"].map((discovery, index) => (
-              <div
-                key={discovery}
-                className="glass-card min-w-[200px] p-4 flex-shrink-0"
-                style={{ animationDelay: `${(index + 4) * 100}ms` }}
-              >
-                <div className="w-full h-24 rounded-lg bg-gradient-to-br from-secondary to-muted mb-3 flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-muted-foreground/50" />
+
+          {recentLoading ? (
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="glass-card min-w-[180px] p-4 flex-shrink-0">
+                  <Skeleton className="w-full h-24 rounded-lg mb-3" />
+                  <Skeleton className="h-4 w-24 mb-1" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
-                <h3 className="font-heading font-medium text-sm">{discovery}</h3>
-                <span className="text-2xs text-muted-foreground">2024</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : recentObjects && recentObjects.length > 0 ? (
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {recentObjects.map((object, index) => (
+                <DiscoveryCard
+                  key={object.id}
+                  object={object}
+                  animationDelay={(index + 4) * 100}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card p-6 text-center">
+              <p className="text-muted-foreground">No discoveries yet</p>
+            </div>
+          )}
         </section>
 
-        {/* Design System Preview */}
-        <section className="mt-12 glass-card p-6">
-          <h2 className="font-heading text-lg font-semibold mb-4">Design System</h2>
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full bg-pale-nebula text-primary-foreground text-sm">Pale Nebula</span>
-              <span className="px-3 py-1 rounded-full bg-cosmic-purple text-white text-sm">Cosmic Purple</span>
-              <span className="px-3 py-1 rounded-full bg-stellar-gold text-primary-foreground text-sm">Stellar Gold</span>
-              <span className="px-3 py-1 rounded-full bg-nebula-pink text-white text-sm">Nebula Pink</span>
-              <span className="px-3 py-1 rounded-full bg-galaxy-green text-white text-sm">Galaxy Green</span>
+        {/* Quick Stats */}
+        <section className="mb-8">
+          <div className="glass-card p-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="font-heading text-2xl font-bold text-pale-nebula">
+                  {categories?.reduce((sum, cat) => sum + (cat.object_count || 0), 0) || 0}
+                </p>
+                <p className="text-2xs text-muted-foreground">Objects</p>
+              </div>
+              <div>
+                <p className="font-heading text-2xl font-bold text-cosmic-purple">
+                  {categories?.length || 0}
+                </p>
+                <p className="text-2xs text-muted-foreground">Categories</p>
+              </div>
+              <div>
+                <p className="font-heading text-2xl font-bold text-stellar-gold">∞</p>
+                <p className="text-2xs text-muted-foreground">To Explore</p>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground font-body">
-              Typography: <span className="font-heading font-semibold">Inter for headings</span>, 
-              <span className="font-body"> Source Sans Pro for body</span>, 
-              <code className="font-mono text-pale-nebula"> JetBrains Mono for code</code>
-            </p>
           </div>
         </section>
       </main>
 
+      {/* Floating Action Button - Random Discovery */}
+      <Link
+        to="/search?random=true"
+        className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-pale-nebula to-cosmic-purple flex items-center justify-center shadow-lg hover:shadow-pale-nebula/30 transition-all duration-300 hover:scale-105"
+      >
+        <Shuffle className="w-6 h-6 text-white" />
+      </Link>
+
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border safe-bottom">
-        <div className="flex items-center justify-around py-3">
-          {[
-            { icon: Globe2, label: "Home", active: true },
-            { icon: Telescope, label: "Search", active: false },
-            { icon: Star, label: "Favorites", active: false },
-            { icon: Clock, label: "Timeline", active: false },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className={`flex flex-col items-center gap-1 touch-target ${
-                item.active ? "text-pale-nebula" : "text-muted-foreground"
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-2xs">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 };
