@@ -14,7 +14,287 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          featured_object_id: string | null
+          icon_name: string | null
+          id: string
+          image_url: string | null
+          name: string
+          object_count: number | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          featured_object_id?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          object_count?: number | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          featured_object_id?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          object_count?: number | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      celestial_objects: {
+        Row: {
+          age: string | null
+          category_id: string | null
+          constellation: string | null
+          created_at: string
+          declination: string | null
+          detailed_description: string | null
+          discoverer: string | null
+          discovery_date: string | null
+          discovery_location: string | null
+          discovery_story: string | null
+          discovery_year: number | null
+          distance_light_years: number | null
+          featured_date: string | null
+          gallery_images: Json | null
+          id: string
+          is_featured: boolean | null
+          mass: string | null
+          name: string
+          object_type: Database["public"]["Enums"]["celestial_object_type"]
+          primary_image_url: string | null
+          radius: string | null
+          right_ascension: string | null
+          scientific_classification: string | null
+          short_description: string | null
+          slug: string
+          temperature: string | null
+          thumbnail_url: string | null
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          age?: string | null
+          category_id?: string | null
+          constellation?: string | null
+          created_at?: string
+          declination?: string | null
+          detailed_description?: string | null
+          discoverer?: string | null
+          discovery_date?: string | null
+          discovery_location?: string | null
+          discovery_story?: string | null
+          discovery_year?: number | null
+          distance_light_years?: number | null
+          featured_date?: string | null
+          gallery_images?: Json | null
+          id?: string
+          is_featured?: boolean | null
+          mass?: string | null
+          name: string
+          object_type: Database["public"]["Enums"]["celestial_object_type"]
+          primary_image_url?: string | null
+          radius?: string | null
+          right_ascension?: string | null
+          scientific_classification?: string | null
+          short_description?: string | null
+          slug: string
+          temperature?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          age?: string | null
+          category_id?: string | null
+          constellation?: string | null
+          created_at?: string
+          declination?: string | null
+          detailed_description?: string | null
+          discoverer?: string | null
+          discovery_date?: string | null
+          discovery_location?: string | null
+          discovery_story?: string | null
+          discovery_year?: number | null
+          distance_light_years?: number | null
+          featured_date?: string | null
+          gallery_images?: Json | null
+          id?: string
+          is_featured?: boolean | null
+          mass?: string | null
+          name?: string
+          object_type?: Database["public"]["Enums"]["celestial_object_type"]
+          primary_image_url?: string | null
+          radius?: string | null
+          right_ascension?: string | null
+          scientific_classification?: string | null
+          short_description?: string | null
+          slug?: string
+          temperature?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "celestial_objects_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_facts: {
+        Row: {
+          celestial_object_id: string | null
+          created_at: string
+          custom_description: string | null
+          custom_title: string | null
+          fact_date: string
+          id: string
+        }
+        Insert: {
+          celestial_object_id?: string | null
+          created_at?: string
+          custom_description?: string | null
+          custom_title?: string | null
+          fact_date: string
+          id?: string
+        }
+        Update: {
+          celestial_object_id?: string | null
+          created_at?: string
+          custom_description?: string | null
+          custom_title?: string | null
+          fact_date?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_facts_celestial_object_id_fkey"
+            columns: ["celestial_object_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discoveries: {
+        Row: {
+          celestial_object_id: string | null
+          created_at: string
+          description: string | null
+          discoverer: string | null
+          discovery_date: string
+          discovery_year: number
+          id: string
+          image_url: string | null
+          significance: string | null
+          source_url: string | null
+          title: string
+        }
+        Insert: {
+          celestial_object_id?: string | null
+          created_at?: string
+          description?: string | null
+          discoverer?: string | null
+          discovery_date: string
+          discovery_year: number
+          id?: string
+          image_url?: string | null
+          significance?: string | null
+          source_url?: string | null
+          title: string
+        }
+        Update: {
+          celestial_object_id?: string | null
+          created_at?: string
+          description?: string | null
+          discoverer?: string | null
+          discovery_date?: string
+          discovery_year?: number
+          id?: string
+          image_url?: string | null
+          significance?: string | null
+          source_url?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discoveries_celestial_object_id_fkey"
+            columns: ["celestial_object_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_date: string | null
+          event_type: string | null
+          event_year: number | null
+          id: string
+          image_url: string | null
+          is_recurring: boolean | null
+          recurrence_pattern: string | null
+          related_object_id: string | null
+          title: string
+          visibility_info: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_date?: string | null
+          event_type?: string | null
+          event_year?: number | null
+          id?: string
+          image_url?: string | null
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          related_object_id?: string | null
+          title: string
+          visibility_info?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_date?: string | null
+          event_type?: string | null
+          event_year?: number | null
+          id?: string
+          image_url?: string | null
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          related_object_id?: string | null
+          title?: string
+          visibility_info?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_related_object_id_fkey"
+            columns: ["related_object_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +303,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      celestial_object_type:
+        | "planet"
+        | "star"
+        | "galaxy"
+        | "nebula"
+        | "asteroid"
+        | "comet"
+        | "black_hole"
+        | "moon"
+        | "exoplanet"
+        | "constellation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +440,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      celestial_object_type: [
+        "planet",
+        "star",
+        "galaxy",
+        "nebula",
+        "asteroid",
+        "comet",
+        "black_hole",
+        "moon",
+        "exoplanet",
+        "constellation",
+      ],
+    },
   },
 } as const
