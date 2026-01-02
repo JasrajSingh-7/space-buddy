@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# 🌌 Brahmand - Cosmic Explorer
 
-## Project info
+> **Explore the Universe.** An interactive astronomy dashboard featuring over 55+ cosmic objects, including galaxies, nebulas, stars, and cosmic extremes.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Brahmand]
 
-## How can I edit this code?
+## 🚀 About The Project
 
-There are several ways of editing your application.
+**Brahmand** (Sanskrit for "Universe") is a modern web application designed to bring the cosmos to your fingertips. It serves as an educational and visual guide to the universe, categorized into planets, stars, nebulas, galaxies, and exotic cosmic events.
 
-**Use Lovable**
+The application intelligently connects to the **NASA Open API** to fetch real-time imagery of celestial bodies while maintaining a high-quality fallback database to ensure a seamless user experience.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### ✨ Key Features
 
-Changes made via Lovable will be committed automatically to this repo.
+* **55+ Curated Objects:** Detailed data on planets, stars, nebulas, and galaxies.
+* **Cosmic Extremes:** A special section dedicated to Quasars, Neutron Stars, and Black Holes.
+* **NASA Smart-Fetch Integration:** Dynamically searches the NASA Image & Video Library API for real-time space imagery.
+* **Robust Fallback System:** Uses high-quality static images if API data is unavailable, ensuring the UI never breaks.
+* **Interactive Modal:** View detailed information, distances, and descriptions in a focused overlay.
 
-**Use your preferred IDE**
+## 🛠️ Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+* **Frontend:** [React](https://reactjs.org/)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Icons:** [Lucide React](https://lucide.dev/)
+* **Data Source:** [NASA Image and Video Library API](https://api.nasa.gov/)
+* **Deployment:** [Vercel](https://vercel.com/)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## ⚡ Getting Started
 
-Follow these steps:
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/Jasrajsingh-7/brahmand.git](https://github.com/Jasrajsingh-7/brahmand.git)
+    ```
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+3.  **Start the development server**
+    ```bash
+    npm run dev
+    ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 👤 Author
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+**Jasraj Singh Tailor**
 
-# Step 3: Install the necessary dependencies.
-npm i
+* GitHub: [@Jasrajsingh-7](https://github.com/Jasrajsingh-7)
+* Project Concept: *Visualizing the vastness of Shunya to Brahmand.*
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 📄 License
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This project is open source and available under the [MIT License](LICENSE).
