@@ -1,88 +1,25 @@
 {
-  "name": "Shunya - Explore the Universe",
-  "short_name": "Shunya",
+  "name": "Brahmand - Cosmic Explorer",
+  "short_name": "Brahmand",
   "description": "Your ultimate astronomical encyclopedia. Discover galaxies, planets, stars, nebulas, and the history of cosmic discoveries.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0E14",
-  "theme_color": "#0B0E14",
+  "background_color": "#020617",
+  "theme_color": "#020617",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
   "categories": ["education", "reference", "science"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
+      "src": "https://cdn-icons-png.flaticon.com/512/3212/3212567.png",
       "type": "image/png",
-      "purpose": "maskable any"
+      "sizes": "192x192"
     },
     {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
+      "src": "https://cdn-icons-png.flaticon.com/512/3212/3212567.png",
       "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Shunya Home Screen"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Search",
-      "short_name": "Search",
-      "description": "Search for celestial objects",
-      "url": "/search",
-      "icons": [{ "src": "/icons/search-shortcut.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Favorites",
-      "short_name": "Favorites",
-      "description": "View your saved objects",
-      "url": "/favorites",
-      "icons": [{ "src": "/icons/favorites-shortcut.png", "sizes": "96x96" }]
+      "sizes": "512x512"
     }
   ],
   "prefer_related_applications": false
