@@ -2,10 +2,10 @@ import { AppHeader } from "@/components/AppHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { CategoryCard } from "@/components/CategoryCard";
 import { DailyFactCard } from "@/components/DailyFactCard";
-import { DiscoveryCard } from "@/components/DiscoveryCard";
 import GurudevChatbot from "@/components/GurudevChatbot";
+import { NasaExplorer } from "@/components/NasaExplorer";
 import { useCategories } from "@/hooks/useCategories";
-import { useFeaturedObject, useRecentObjects } from "@/hooks/useCelestialObjects";
+import { useFeaturedObject } from "@/hooks/useCelestialObjects";
 import { getCategoryIcon } from "@/lib/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 const Index = () => {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: featuredObject, isLoading: featuredLoading } = useFeaturedObject();
-  const { data: recentObjects, isLoading: recentLoading } = useRecentObjects(10);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
@@ -78,41 +77,8 @@ const Index = () => {
           )}
         </section>
 
-        {/* Recent Discoveries */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-heading text-lg font-semibold">Recent Discoveries</h2>
-            <Link to="/search" className="text-2xs text-pale-nebula hover:underline">
-              View all
-            </Link>
-          </div>
-
-          {recentLoading ? (
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card min-w-[180px] p-4 flex-shrink-0">
-                  <Skeleton className="w-full h-24 rounded-lg mb-3" />
-                  <Skeleton className="h-4 w-24 mb-1" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              ))}
-            </div>
-          ) : recentObjects && recentObjects.length > 0 ? (
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-              {recentObjects.map((object, index) => (
-                <DiscoveryCard
-                  key={object.id}
-                  object={object}
-                  animationDelay={(index + 4) * 100}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="glass-card p-6 text-center">
-              <p className="text-muted-foreground">No discoveries yet</p>
-            </div>
-          )}
-        </section>
+        {/* NASA Database Explorer */}
+        <NasaExplorer />
 
         {/* Quick Stats */}
         <section className="mb-8">
