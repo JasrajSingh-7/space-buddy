@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 
 interface GlassCardProps {
   children: ReactNode;
@@ -7,6 +7,7 @@ interface GlassCardProps {
   hover?: boolean;
   glow?: boolean;
   onClick?: () => void;
+  style?: CSSProperties;
 }
 
 export function GlassCard({ 
@@ -14,11 +15,13 @@ export function GlassCard({
   className, 
   hover = false,
   glow = false,
-  onClick 
+  onClick,
+  style
 }: GlassCardProps) {
   return (
     <div
       onClick={onClick}
+      style={style}
       className={cn(
         "glass-card p-4 relative overflow-hidden",
         hover && "transition-all duration-300 hover:border-pale-nebula/40 cursor-pointer",

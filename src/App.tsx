@@ -8,6 +8,7 @@ import Categories from "./pages/Categories";
 import Search from "./pages/Search";
 import Favorites from "./pages/Favorites";
 import Timeline from "./pages/Timeline";
+import ObjectDetail from "./pages/ObjectDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/timeline" element={<Timeline />} />
+          <Route path="/object/:slug" element={<ObjectDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
