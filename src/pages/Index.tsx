@@ -3,6 +3,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { CategoryCard } from "@/components/CategoryCard";
 import { DailyFactCard } from "@/components/DailyFactCard";
 import { DiscoveryCard } from "@/components/DiscoveryCard";
+import GurudevChatbot from "@/components/GurudevChatbot";
 import { useCategories } from "@/hooks/useCategories";
 import { useFeaturedObject, useRecentObjects } from "@/hooks/useCelestialObjects";
 import { getCategoryIcon } from "@/lib/icons";
@@ -146,6 +147,9 @@ const Index = () => {
       >
         <Shuffle className="w-6 h-6 text-white" />
       </Link>
+
+      {/* Gurudev AI Chatbot */}
+      <GurudevChatbot />
 
       {/* Bottom Navigation */}
       <BottomNav />
