@@ -106,6 +106,13 @@ const Index = () => {
       </main>
 
 
+      {/* Footer */}
+      <footer className="w-full py-6 mt-8 border-t border-border/30 text-center mb-20">
+        <p className="text-muted-foreground/60 text-[10px] uppercase tracking-[0.2em] hover:text-pale-nebula transition-colors cursor-default">
+          Made by Jasraj Singh Tailor
+        </p>
+      </footer>
+
       {/* Gurudev AI Chatbot */}
       <GurudevChatbot />
 
