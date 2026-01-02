@@ -2,7 +2,7 @@
 
 > **Explore the Universe.** An interactive astronomy dashboard featuring over 55+ cosmic objects, including galaxies, nebulas, stars, and cosmic extremes.
 
-![Brahmand Banner](https://img.icons8.com/fluency/96/saturn-planet.png)
+![Brahmand]
 
 ## 🚀 About The Project
 
