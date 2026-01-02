@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Telescope, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+
+// Configuration - Replace this URL with your uploaded logo URL later
+const LOGO_URL = "https://cdn-icons-png.flaticon.com/512/3212/3212567.png";
+const APP_NAME = "Brahmand";
 
 interface AppHeaderProps {
   className?: string;
@@ -18,11 +22,16 @@ export function AppHeader({ className, showMenu = true, onMenuClick }: AppHeader
       )}
     >
       <Link to="/" className="flex items-center gap-3 group">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pale-nebula via-cosmic-purple to-nebula-pink flex items-center justify-center shadow-lg group-hover:shadow-pale-nebula/20 transition-shadow">
-          <Telescope className="w-5 h-5 text-white" />
+        <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-pale-nebula via-cosmic-purple to-nebula-pink shadow-lg group-hover:shadow-pale-nebula/20 transition-shadow">
+          {/* Replace LOGO_URL constant at the top of this file with your custom logo */}
+          <img 
+            src={LOGO_URL} 
+            alt={`${APP_NAME} Logo`} 
+            className="w-full h-full object-cover"
+          />
         </div>
         <span className="font-heading font-semibold text-xl text-foreground">
-          Shunya
+          {APP_NAME}
         </span>
       </Link>
 
