@@ -1,338 +1,193 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useCelestialObject, useCelestialObjects } from "@/hooks/useCelestialObjects";
-import { GlassCard } from "@/components/ui/glass-card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DiscoveryCard } from "@/components/DiscoveryCard";
-import {
-  ArrowLeft,
-  Star,
-  Share2,
-  Calendar,
-  MapPin,
-  Ruler,
-  Thermometer,
-  Clock,
-  User,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-} from "lucide-react";
-import { useState } from "react";
+import { BottomNav } from "@/components/BottomNav";
+import { ArrowLeft, Calendar, Share2, Info, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Define what a single NASA item looks like for our view
+interface NasaDetail {
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  date: string | null;
+  keywords: string[];
+  nasaId: string;
+}
 
 const ObjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { data: object, isLoading, error } = useCelestialObject(slug || "");
-  const { data: relatedObjects } = useCelestialObjects({
-    objectType: object?.object_type,
-    limit: 10,
-  });
+  
+  const [data, setData] = useState<NasaDetail | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [showFullStory, setShowFullStory] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  useEffect(() => {
+    if (!slug) return;
 
-  // Filter out current object from related
-  const filteredRelated = relatedObjects?.filter((o) => o.id !== object?.id) || [];
+    // 1. Convert the URL slug back to a search term
+    // e.g., "andromeda-galaxy" -> "andromeda galaxy"
+    const searchTerm = slug.replace(/-/g, " ");
 
-  const formatObjectType = (type: string) => {
-    return type
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
+    const fetchDetails = async () => {
+      setLoading(true);
       try {
-        await navigator.share({
-          title: object?.name,
-          text: object?.short_description || `Learn about ${object?.name}`,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log("Share cancelled");
+        // 2. Fetch the specific item from NASA
+        const response = await fetch(`https://images-api.nasa.gov/search?q=${searchTerm}`);
+        const json = await response.json();
+        
+        // We take the first result as the best match
+        const item = json.collection.items[0];
+
+        if (item) {
+          setData({
+            title: item.data[0].title,
+            description: item.data[0].description,
+            imageUrl: item.links ? item.links[0].href : null,
+            date: item.data[0].date_created ? item.data[0].date_created.substring(0, 10) : null,
+            keywords: item.data[0].keywords || [],
+            nasaId: item.data[0].nasa_id
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching details:", error);
+      } finally {
+        setLoading(false);
       }
-    }
-  };
+    };
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    // TODO: Implement local storage persistence
-  };
+    fetchDetails();
+  }, [slug]);
 
-  if (isLoading) {
-    return <ObjectDetailSkeleton />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6 flex flex-col items-center justify-center">
+        <Skeleton className="w-full h-64 rounded-xl mb-6" />
+        <Skeleton className="w-3/4 h-8 mb-4" />
+        <Skeleton className="w-full h-32" />
+        <BottomNav />
+      </div>
+    );
   }
 
-  if (error || !object) {
+  if (!data) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-        <Sparkles className="w-16 h-16 text-muted-foreground mb-4" />
-        <h1 className="font-heading text-xl text-foreground mb-2">Object Not Found</h1>
-        <p className="text-muted-foreground text-center mb-6">
-          The celestial object you're looking for doesn't exist or has been removed.
-        </p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-foreground">
+        <h1 className="text-2xl font-bold mb-2">Object Not Found</h1>
         <Button onClick={() => navigate(-1)} variant="outline">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Go Back
+          <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Hero Image */}
-      <div className="relative h-72 sm:h-96 w-full">
-        {object.primary_image_url ? (
-          <img
-            src={object.primary_image_url}
-            alt={object.name}
+    <div className="min-h-screen bg-background text-foreground pb-24">
+      {/* Background Effect */}
+      <div className="fixed inset-0 star-field opacity-30 pointer-events-none" />
+
+      {/* Hero Image Section */}
+      <div className="relative w-full h-[50vh] min-h-[400px]">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background z-10" />
+        {data.imageUrl ? (
+          <img 
+            src={data.imageUrl} 
+            alt={data.title}
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-secondary via-muted to-card flex items-center justify-center">
-            <Sparkles className="w-24 h-24 text-muted-foreground/30" />
+          <div className="w-full h-full bg-secondary/20 flex items-center justify-center">
+            <Info className="w-16 h-16 text-muted-foreground" />
           </div>
         )}
         
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        
-        {/* Top navigation */}
-        <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
-          <Button
-            variant="ghost"
-            size="icon"
+        {/* Navigation Header (Floating) */}
+        <div className="absolute top-0 left-0 right-0 p-4 z-20 flex justify-between items-start">
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="rounded-full bg-background/50 backdrop-blur-md hover:bg-background/80"
             onClick={() => navigate(-1)}
-            className="bg-background/40 backdrop-blur-sm hover:bg-background/60"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFavorite}
-              className="bg-background/40 backdrop-blur-sm hover:bg-background/60"
-            >
-              <Star
-                className={cn(
-                  "w-5 h-5 transition-colors",
-                  isFavorite && "fill-stellar-gold text-stellar-gold"
-                )}
-              />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleShare}
-              className="bg-background/40 backdrop-blur-sm hover:bg-background/60"
-            >
-              <Share2 className="w-5 h-5" />
-            </Button>
-          </div>
+          
+          <Button 
+            variant="secondary" 
+            size="icon"
+            className="rounded-full bg-background/50 backdrop-blur-md hover:bg-background/80"
+            onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                // Optional: Add a toast notification here
+            }}
+          >
+            <Share2 className="w-5 h-5" />
+          </Button>
         </div>
+      </div>
 
-        {/* Object name overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
-          <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-pale-nebula/20 text-pale-nebula mb-2">
-            {formatObjectType(object.object_type)}
-          </span>
-          <h1 className="font-heading text-3xl sm:text-4xl font-bold text-foreground">
-            {object.name}
+      {/* Content Section */}
+      <div className="px-5 -mt-12 relative z-20">
+        <div className="glass-card p-6 rounded-2xl animate-fade-in">
+          
+          {/* Title & Date */}
+          <h1 className="font-heading text-2xl md:text-3xl font-bold mb-3 leading-tight">
+            {data.title}
           </h1>
-          {object.constellation && (
-            <p className="text-muted-foreground mt-1 flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              {object.constellation}
-            </p>
+          
+          {data.date && (
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
+              <Calendar className="w-4 h-4" />
+              <span>Captured on {data.date}</span>
+            </div>
           )}
+
+          {/* Keywords / Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {data.keywords.slice(0, 5).map((keyword) => (
+              <span 
+                key={keyword}
+                className="px-2.5 py-1 rounded-full bg-secondary/60 text-pale-nebula text-xs font-medium border border-pale-nebula/10"
+              >
+                {keyword}
+              </span>
+            ))}
+          </div>
+
+          {/* Description */}
+          <div className="prose prose-invert max-w-none">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Info className="w-4 h-4 text-pale-nebula" />
+              About this Object
+            </h3>
+            <p className="text-muted-foreground leading-relaxed text-sm md:text-base whitespace-pre-line">
+              {data.description}
+            </p>
+          </div>
+
+          {/* NASA Source Link */}
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <p className="text-xs text-muted-foreground mb-3">
+              Data provided by NASA Image and Video Library
+            </p>
+            <a 
+              href={`https://images.nasa.gov/details/${data.nasaId}`} 
+              target="_blank" 
+              rel="noreferrer"
+            >
+              <Button variant="outline" className="w-full gap-2">
+                View Original on NASA <ExternalLink className="w-4 h-4" />
+              </Button>
+            </a>
+          </div>
+
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 space-y-6 -mt-2">
-        {/* Quick Facts Card */}
-        <GlassCard className="animate-slide-up">
-          <h2 className="font-heading text-lg font-semibold text-foreground mb-4">
-            Quick Facts
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            {object.discovery_year && (
-              <QuickFact
-                icon={Calendar}
-                label="Discovered"
-                value={object.discovery_year.toString()}
-              />
-            )}
-            {object.discoverer && (
-              <QuickFact icon={User} label="Discoverer" value={object.discoverer} />
-            )}
-            {object.distance_light_years && (
-              <QuickFact
-                icon={Ruler}
-                label="Distance"
-                value={`${Number(object.distance_light_years).toLocaleString()} ly`}
-              />
-            )}
-            {object.temperature && (
-              <QuickFact icon={Thermometer} label="Temperature" value={object.temperature} />
-            )}
-            {object.mass && (
-              <QuickFact icon={Sparkles} label="Mass" value={object.mass} />
-            )}
-            {object.radius && (
-              <QuickFact icon={Ruler} label="Radius" value={object.radius} />
-            )}
-            {object.age && (
-              <QuickFact icon={Clock} label="Age" value={object.age} />
-            )}
-            {object.scientific_classification && (
-              <QuickFact
-                icon={Sparkles}
-                label="Classification"
-                value={object.scientific_classification}
-              />
-            )}
-          </div>
-        </GlassCard>
-
-        {/* Detailed Description */}
-        {(object.short_description || object.detailed_description) && (
-          <GlassCard className="animate-slide-up" style={{ animationDelay: "100ms" }}>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">
-              About {object.name}
-            </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              {object.detailed_description || object.short_description}
-            </p>
-          </GlassCard>
-        )}
-
-        {/* Discovery Story */}
-        {object.discovery_story && (
-          <GlassCard className="animate-slide-up" style={{ animationDelay: "200ms" }}>
-            <button
-              onClick={() => setShowFullStory(!showFullStory)}
-              className="w-full flex items-center justify-between"
-            >
-              <h2 className="font-heading text-lg font-semibold text-foreground">
-                Discovery Story
-              </h2>
-              {showFullStory ? (
-                <ChevronUp className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-muted-foreground" />
-              )}
-            </button>
-            <div
-              className={cn(
-                "overflow-hidden transition-all duration-300",
-                showFullStory ? "max-h-[1000px] mt-4" : "max-h-0"
-              )}
-            >
-              <p className="text-muted-foreground leading-relaxed">
-                {object.discovery_story}
-              </p>
-            </div>
-          </GlassCard>
-        )}
-
-        {/* Coordinates */}
-        {(object.right_ascension || object.declination) && (
-          <GlassCard className="animate-slide-up" style={{ animationDelay: "300ms" }}>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-3">
-              Celestial Coordinates
-            </h2>
-            <div className="flex gap-6 font-mono text-sm">
-              {object.right_ascension && (
-                <div>
-                  <span className="text-muted-foreground">RA: </span>
-                  <span className="text-foreground">{object.right_ascension}</span>
-                </div>
-              )}
-              {object.declination && (
-                <div>
-                  <span className="text-muted-foreground">Dec: </span>
-                  <span className="text-foreground">{object.declination}</span>
-                </div>
-              )}
-            </div>
-          </GlassCard>
-        )}
-
-        {/* Related Objects */}
-        {filteredRelated.length > 0 && (
-          <div className="animate-slide-up" style={{ animationDelay: "400ms" }}>
-            <h2 className="font-heading text-lg font-semibold text-foreground mb-4">
-              Related Objects
-            </h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-              {filteredRelated.slice(0, 6).map((relatedObj, index) => (
-                <DiscoveryCard
-                  key={relatedObj.id}
-                  object={relatedObj}
-                  animationDelay={index * 50}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <BottomNav />
     </div>
   );
 };
-
-interface QuickFactProps {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-}
-
-function QuickFact({ icon: Icon, label, value }: QuickFactProps) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="p-2 rounded-lg bg-secondary/50">
-        <Icon className="w-4 h-4 text-pale-nebula" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm text-foreground font-medium truncate">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function ObjectDetailSkeleton() {
-  return (
-    <div className="min-h-screen bg-background pb-24">
-      <Skeleton className="h-72 sm:h-96 w-full" />
-      <div className="px-4 sm:px-6 space-y-6 -mt-2">
-        <div className="glass-card p-4">
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="grid grid-cols-2 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <Skeleton className="w-8 h-8 rounded-lg" />
-                <div className="flex-1">
-                  <Skeleton className="h-3 w-16 mb-1" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="glass-card p-4">
-          <Skeleton className="h-6 w-40 mb-3" />
-          <Skeleton className="h-4 w-full mb-2" />
-          <Skeleton className="h-4 w-full mb-2" />
-          <Skeleton className="h-4 w-3/4" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default ObjectDetail;
