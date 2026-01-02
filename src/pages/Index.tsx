@@ -8,7 +8,6 @@ import { useCategories } from "@/hooks/useCategories";
 import { useFeaturedObject, useRecentObjects } from "@/hooks/useCelestialObjects";
 import { getCategoryIcon } from "@/lib/icons";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Shuffle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -140,13 +139,6 @@ const Index = () => {
         </section>
       </main>
 
-      {/* Floating Action Button - Random Discovery */}
-      <Link
-        to="/search?random=true"
-        className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-pale-nebula to-cosmic-purple flex items-center justify-center shadow-lg hover:shadow-pale-nebula/30 transition-all duration-300 hover:scale-105"
-      >
-        <Shuffle className="w-6 h-6 text-white" />
-      </Link>
 
       {/* Gurudev AI Chatbot */}
       <GurudevChatbot />
