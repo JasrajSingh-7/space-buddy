@@ -1,4 +1,3 @@
-import Articles from "./pages/Articles";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,11 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Categories from "./pages/Categories";
 import CategoryDetail from "./pages/CategoryDetail";
-import Search from "./pages/Search";
-import Favorites from "./pages/Favorites";
-import Timeline from "./pages/Timeline";
 import ObjectDetail from "./pages/ObjectDetail";
-import NotFound from "./pages/NotFound";
+import Timeline from "./pages/Timeline";
+import Favorites from "./pages/Favorites";
+// 👇 1. ADD THIS IMPORT
+import Articles from "./pages/Articles"; 
 
 const queryClient = new QueryClient();
 
@@ -24,13 +23,14 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/categories/:slug" element={<CategoryDetail />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/timeline" element={<Timeline />} />
+          <Route path="/category/:slug" element={<CategoryDetail />} />
           <Route path="/object/:slug" element={<ObjectDetail />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/timeline" element={<Timeline />} />
+          <Route path="/favorites" element={<Favorites />} />
+          
+          {/* 👇 2. ADD THIS ROUTE */}
+          <Route path="/articles" element={<Articles />} />
+          
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
