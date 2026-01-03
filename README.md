@@ -1,6 +1,6 @@
 # 🌌 Brahmand - Cosmic Explorer
 
-> **Explore the Universe.** An interactive astronomy dashboard featuring over 55+ cosmic objects, including galaxies, nebulas, stars, and cosmic extremes.
+> **Explore the Universe.** An interactive astronomy dashboard featuring over 100+ cosmic objects, including galaxies, nebulas, stars, and cosmic extremes.
 
 ![Brahmand]
 
