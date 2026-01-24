@@ -1,7 +1,14 @@
 import { useState } from 'react';
-import { Star, Globe, Disc, Activity, Rocket, Loader2 } from 'lucide-react';
-import { useNasaData, NasaCategory } from '@/hooks/useNasaData';
+import { Star, Globe, Disc, Activity, Rocket, Loader2, X, Calendar, Hash } from 'lucide-react';
+import { useNasaData, NasaCategory, NasaItem } from '@/hooks/useNasaData';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 const CATEGORY_TABS = [
   { id: 'Planet' as NasaCategory, icon: Globe, label: 'Planets' },
@@ -13,6 +20,7 @@ const CATEGORY_TABS = [
 
 export function NasaExplorer() {
   const [category, setCategory] = useState<NasaCategory>('Planet');
+  const [selectedItem, setSelectedItem] = useState<NasaItem | null>(null);
   const { items, loading, error } = useNasaData(category);
 
   return (
@@ -64,7 +72,8 @@ export function NasaExplorer() {
           {items.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="glass-card overflow-hidden group hover:border-pale-nebula/30 transition-all duration-300"
+              onClick={() => setSelectedItem(item)}
+              className="glass-card overflow-hidden group hover:border-pale-nebula/30 transition-all duration-300 cursor-pointer"
             >
               {/* Image */}
               <div className="h-36 overflow-hidden relative bg-background">
@@ -108,6 +117,68 @@ export function NasaExplorer() {
           </span>
         </div>
       )}
+
+      {/* Object Detail Modal */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden bg-background border-border">
+          {selectedItem && (
+            <>
+              {/* Hero Image */}
+              <div className="h-64 sm:h-80 relative overflow-hidden bg-secondary">
+                <img
+                  src={selectedItem.imageUrl}
+                  alt={selectedItem.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+              </div>
+
+              {/* Content */}
+              <div className="p-6 -mt-16 relative">
+                <DialogHeader className="mb-4">
+                  <DialogTitle className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
+                    {selectedItem.title}
+                  </DialogTitle>
+                </DialogHeader>
+
+                {/* Metadata */}
+                <div className="flex flex-wrap gap-3 mb-4">
+                  <div className="flex items-center gap-1.5 text-pale-nebula text-sm">
+                    <Calendar size={14} />
+                    <span>{selectedItem.date_created}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm font-mono">
+                    <Hash size={14} />
+                    <span>{selectedItem.id}</span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <DialogDescription asChild>
+                  <div className="text-sm text-muted-foreground leading-relaxed max-h-48 overflow-y-auto pr-2">
+                    {selectedItem.description}
+                  </div>
+                </DialogDescription>
+
+                {/* Category Badge */}
+                <div className="mt-6 pt-4 border-t border-border/50">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pale-nebula/10 text-pale-nebula text-sm font-medium">
+                    {CATEGORY_TABS.find(t => t.id === category)?.icon && (
+                      <span>
+                        {(() => {
+                          const Icon = CATEGORY_TABS.find(t => t.id === category)?.icon;
+                          return Icon ? <Icon size={14} /> : null;
+                        })()}
+                      </span>
+                    )}
+                    {category}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
