@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/AppHeader";
+import { ARStarViewer } from "@/components/ARStarViewer";
 import { BottomNav } from "@/components/BottomNav";
 import { CategoryCard } from "@/components/CategoryCard";
 import { DailyFactCard } from "@/components/DailyFactCard";
@@ -79,6 +80,21 @@ const Index = () => {
         </section>
 
         {/* Solar System 3D Explorer */}
+        {/* AR Star Viewer */}
+        <section className="mb-8">
+          <div className="glass-card p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-heading text-lg font-semibold mb-1">Night Sky Explorer</h3>
+                <p className="text-sm text-muted-foreground">
+                  Use AR to identify constellations and stars
+                </p>
+              </div>
+              <ARStarViewer />
+            </div>
+          </div>
+        </section>
+
         <SolarSystemExplorer />
 
         {/* NASA Database Explorer */}
