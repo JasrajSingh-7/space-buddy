@@ -1,52 +1,36 @@
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Stars } from '@react-three/drei';
+import { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
+import { ProceduralPlanet } from './ProceduralPlanet';
 
-interface PlanetMeshProps {
-  color: string;
-  emissive?: string;
-  hasRings?: boolean;
-  rotationSpeed?: number;
+// Saturn's rings component
+function SaturnRings() {
+  return (
+    <mesh rotation={[Math.PI / 2.2, 0, 0]}>
+      <ringGeometry args={[2, 3.2, 64]} />
+      <meshStandardMaterial
+        color="#d4b896"
+        side={THREE.DoubleSide}
+        transparent
+        opacity={0.85}
+      />
+    </mesh>
+  );
 }
 
-function PlanetMesh({ color, emissive, hasRings, rotationSpeed = 0.003 }: PlanetMeshProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
-
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += rotationSpeed;
-    }
-    if (ringRef.current) {
-      ringRef.current.rotation.z += rotationSpeed * 0.3;
-    }
-  });
-
+// Uranus rings (thinner)
+function UranusRings() {
   return (
-    <group>
-      <Sphere ref={meshRef} args={[1.5, 64, 64]}>
-        <meshStandardMaterial
-          color={color}
-          emissive={emissive || color}
-          emissiveIntensity={0.15}
-          roughness={0.7}
-          metalness={0.2}
-        />
-      </Sphere>
-      
-      {hasRings && (
-        <mesh ref={ringRef} rotation={[Math.PI / 2.2, 0, 0]}>
-          <ringGeometry args={[2, 3, 64]} />
-          <meshStandardMaterial
-            color="#e8d5b0"
-            side={THREE.DoubleSide}
-            transparent
-            opacity={0.8}
-          />
-        </mesh>
-      )}
-    </group>
+    <mesh rotation={[Math.PI / 2.2, 0, 0]}>
+      <ringGeometry args={[2.2, 2.6, 64]} />
+      <meshStandardMaterial
+        color="#7ab8c9"
+        side={THREE.DoubleSide}
+        transparent
+        opacity={0.5}
+      />
+    </mesh>
   );
 }
 
@@ -61,21 +45,31 @@ interface Planet3DProps {
   };
 }
 
+type PlanetType = 'earth' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'mercury' | 'venus';
+
 export function Planet3D({ planetData }: Planet3DProps) {
+  const planetType = planetData.id as PlanetType;
+  
   return (
     <div className="w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden bg-background">
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[5, 3, 5]} intensity={1.2} />
-        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#38bdf8" />
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 3, 5]} intensity={1.5} />
+        <pointLight position={[-10, -10, -10]} intensity={0.2} color="#38bdf8" />
         
         <Stars radius={100} depth={50} count={1500} factor={3} fade speed={1} />
         
-        <PlanetMesh
-          color={planetData.color}
-          emissive={planetData.emissive}
-          hasRings={planetData.hasRings}
-        />
+        <Suspense fallback={null}>
+          <group>
+            <ProceduralPlanet 
+              planetType={planetType} 
+              baseColor={planetData.color}
+              size={1.5}
+            />
+            {planetData.id === 'saturn' && <SaturnRings />}
+            {planetData.id === 'uranus' && <UranusRings />}
+          </group>
+        </Suspense>
         
         <OrbitControls
           enableZoom={true}
@@ -83,7 +77,7 @@ export function Planet3D({ planetData }: Planet3DProps) {
           minDistance={3}
           maxDistance={10}
           autoRotate
-          autoRotateSpeed={0.5}
+          autoRotateSpeed={0.3}
         />
       </Canvas>
     </div>
