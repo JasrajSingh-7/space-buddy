@@ -82,12 +82,12 @@ const Index = () => {
         {/* Solar System 3D Explorer */}
         {/* AR Star Viewer */}
         <section className="mb-8">
-          <div className="glass-card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-heading text-lg font-semibold mb-1">Night Sky Explorer</h3>
-                <p className="text-sm text-muted-foreground">
-                  Use AR to identify constellations and stars
+          <div className="glass-card p-5 bg-gradient-to-r from-secondary/80 to-secondary/40">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="font-heading text-base font-semibold mb-0.5">Night Sky Explorer</h3>
+                <p className="text-xs text-muted-foreground">
+                  Identify constellations with AR
                 </p>
               </div>
               <ARStarViewer />
