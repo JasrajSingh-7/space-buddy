@@ -1,5 +1,5 @@
 import { useState, Suspense } from 'react';
-import { Orbit, Loader2 } from 'lucide-react';
+import { Orbit, Loader2, LayoutGrid, Globe } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Planet3D } from './Planet3D';
+import { SolarSystemOrbit } from './SolarSystemOrbit';
 import { cn } from '@/lib/utils';
+import { Slider } from '@/components/ui/slider';
 
 interface Planet {
   id: string;
@@ -119,8 +121,19 @@ const PLANETS: Planet[] = [
   }
 ];
 
+type ViewMode = 'grid' | 'orbit';
+
 export function SolarSystemExplorer() {
   const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [orbitSpeed, setOrbitSpeed] = useState([1]);
+
+  const handleOrbitPlanetClick = (planetId: string) => {
+    const planet = PLANETS.find(p => p.id === planetId);
+    if (planet) {
+      setSelectedPlanet(planet);
+    }
+  };
 
   return (
     <section className="mb-8">
@@ -130,33 +143,95 @@ export function SolarSystemExplorer() {
           <Orbit size={20} className="text-pale-nebula" />
           Solar System
         </h2>
-        <span className="text-2xs text-muted-foreground font-mono">
-          3D Interactive
-        </span>
+        
+        {/* View Toggle */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={cn(
+              "p-2 rounded-lg transition-all duration-200",
+              viewMode === 'grid' 
+                ? "bg-pale-nebula text-background" 
+                : "bg-secondary/60 text-muted-foreground hover:bg-secondary"
+            )}
+            title="Grid View"
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            onClick={() => setViewMode('orbit')}
+            className={cn(
+              "p-2 rounded-lg transition-all duration-200",
+              viewMode === 'orbit' 
+                ? "bg-pale-nebula text-background" 
+                : "bg-secondary/60 text-muted-foreground hover:bg-secondary"
+            )}
+            title="Orbital View"
+          >
+            <Globe size={16} />
+          </button>
+        </div>
       </div>
 
-      {/* Planet Grid */}
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-        {PLANETS.map((planet) => (
-          <button
-            key={planet.id}
-            onClick={() => setSelectedPlanet(planet)}
-            className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/40 hover:bg-secondary/80 border border-border/30 hover:border-pale-nebula/30 transition-all duration-300"
-          >
-            {/* Planet Preview Circle */}
-            <div
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
-              style={{
-                background: `radial-gradient(circle at 30% 30%, ${planet.color}, ${planet.emissive || planet.color})`,
-                boxShadow: `0 0 20px ${planet.color}40`
-              }}
+      {/* Grid View */}
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+          {PLANETS.map((planet) => (
+            <button
+              key={planet.id}
+              onClick={() => setSelectedPlanet(planet)}
+              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/40 hover:bg-secondary/80 border border-border/30 hover:border-pale-nebula/30 transition-all duration-300"
+            >
+              {/* Planet Preview Circle */}
+              <div
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
+                style={{
+                  background: `radial-gradient(circle at 30% 30%, ${planet.color}, ${planet.emissive || planet.color})`,
+                  boxShadow: `0 0 20px ${planet.color}40`
+                }}
+              />
+              <span className="text-2xs sm:text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {planet.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Orbital View */}
+      {viewMode === 'orbit' && (
+        <div className="space-y-4">
+          <Suspense fallback={
+            <div className="w-full h-[350px] sm:h-[450px] flex items-center justify-center bg-secondary/20 rounded-xl border border-border/30">
+              <Loader2 className="animate-spin text-pale-nebula" size={32} />
+            </div>
+          }>
+            <SolarSystemOrbit 
+              onPlanetClick={handleOrbitPlanetClick}
+              speedMultiplier={orbitSpeed[0]}
             />
-            <span className="text-2xs sm:text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">
-              {planet.name}
-            </span>
-          </button>
-        ))}
-      </div>
+          </Suspense>
+          
+          {/* Speed Control */}
+          <div className="flex items-center gap-4 px-2">
+            <span className="text-2xs text-muted-foreground whitespace-nowrap">Orbit Speed</span>
+            <Slider
+              value={orbitSpeed}
+              onValueChange={setOrbitSpeed}
+              min={0.1}
+              max={5}
+              step={0.1}
+              className="flex-1"
+            />
+            <span className="text-2xs text-pale-nebula font-mono w-12 text-right">{orbitSpeed[0].toFixed(1)}x</span>
+          </div>
+          
+          {/* Hint */}
+          <p className="text-2xs text-muted-foreground text-center">
+            Click any planet to view details • Drag to rotate view • Scroll to zoom
+          </p>
+        </div>
+      )}
 
       {/* Planet Detail Modal */}
       <Dialog open={!!selectedPlanet} onOpenChange={(open) => !open && setSelectedPlanet(null)}>
