@@ -96,6 +96,43 @@ const vertexShader = `
   }
 `;
 
+// Atmosphere glow vertex shader
+const atmosphereVertexShader = `
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+  
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vWorldPosition = worldPosition.xyz;
+    gl_Position = projectionMatrix * viewMatrix * worldPosition;
+  }
+`;
+
+// Atmosphere glow fragment shader
+const atmosphereFragmentShader = `
+  uniform vec3 uAtmosphereColor;
+  uniform float uIntensity;
+  uniform float uPower;
+  uniform vec3 uLightDirection;
+  
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+  
+  void main() {
+    vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+    float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), uPower);
+    
+    // Add light-facing enhancement
+    float lightFacing = max(dot(vNormal, uLightDirection), 0.0) * 0.3 + 0.7;
+    
+    vec3 glowColor = uAtmosphereColor * fresnel * uIntensity * lightFacing;
+    float alpha = fresnel * uIntensity * 0.8;
+    
+    gl_FragColor = vec4(glowColor, alpha);
+  }
+`;
+
 // Earth-like planet shader
 const earthFragmentShader = `
   ${noiseGLSL}
@@ -133,9 +170,9 @@ const earthFragmentShader = `
     
     vec3 finalColor = baseColor * (ambient + diff * 0.8);
     
-    // Atmosphere rim
+    // Atmosphere rim (subtle, main glow is separate layer)
     float rim = 1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0);
-    finalColor += vec3(0.3, 0.5, 0.8) * pow(rim, 3.0) * 0.5;
+    finalColor += vec3(0.3, 0.5, 0.8) * pow(rim, 4.0) * 0.3;
     
     gl_FragColor = vec4(finalColor, 1.0);
   }
@@ -205,6 +242,10 @@ const jupiterFragmentShader = `
     vec3 lightDir = normalize(vec3(1.0, 0.3, 1.0));
     float diff = max(dot(vNormal, lightDir), 0.0);
     
+    // Subtle atmosphere rim
+    float rim = 1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0);
+    baseColor += vec3(0.9, 0.7, 0.5) * pow(rim, 4.0) * 0.2;
+    
     gl_FragColor = vec4(baseColor * (0.4 + diff * 0.6), 1.0);
   }
 `;
@@ -231,6 +272,10 @@ const saturnFragmentShader = `
     
     vec3 lightDir = normalize(vec3(1.0, 0.3, 1.0));
     float diff = max(dot(vNormal, lightDir), 0.0);
+    
+    // Subtle atmosphere rim
+    float rim = 1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0);
+    baseColor += vec3(0.95, 0.85, 0.6) * pow(rim, 4.0) * 0.2;
     
     gl_FragColor = vec4(baseColor * (0.4 + diff * 0.6), 1.0);
   }
@@ -261,9 +306,9 @@ const iceGiantFragmentShader = `
     vec3 lightDir = normalize(vec3(1.0, 0.3, 1.0));
     float diff = max(dot(vNormal, lightDir), 0.0);
     
-    // Atmosphere
+    // Atmosphere rim
     float rim = 1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0);
-    baseColor += uBaseColor * pow(rim, 2.0) * 0.3;
+    baseColor += uBaseColor * pow(rim, 3.0) * 0.4;
     
     gl_FragColor = vec4(baseColor * (0.3 + diff * 0.7), 1.0);
   }
@@ -299,6 +344,55 @@ const rockyFragmentShader = `
 `;
 
 type PlanetType = 'earth' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'mercury' | 'venus';
+
+interface AtmosphereConfig {
+  color: string;
+  intensity: number;
+  power: number;
+  scale: number;
+}
+
+const atmosphereConfigs: Record<PlanetType, AtmosphereConfig | null> = {
+  earth: { color: '#4da6ff', intensity: 1.2, power: 2.5, scale: 1.15 },
+  mars: null, // Mars has thin atmosphere, skip
+  jupiter: { color: '#ffcc99', intensity: 0.8, power: 3.0, scale: 1.08 },
+  saturn: { color: '#ffe4b3', intensity: 0.7, power: 3.0, scale: 1.08 },
+  uranus: { color: '#a6e6ff', intensity: 0.9, power: 2.5, scale: 1.12 },
+  neptune: { color: '#6699ff', intensity: 1.0, power: 2.5, scale: 1.12 },
+  mercury: null,
+  venus: { color: '#ffdd99', intensity: 0.6, power: 3.5, scale: 1.1 }, // Venus has thick hazy atmosphere
+};
+
+interface AtmosphereGlowProps {
+  config: AtmosphereConfig;
+  size: number;
+}
+
+function AtmosphereGlow({ config, size }: AtmosphereGlowProps) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  const uniforms = useMemo(() => ({
+    uAtmosphereColor: { value: new THREE.Color(config.color) },
+    uIntensity: { value: config.intensity },
+    uPower: { value: config.power },
+    uLightDirection: { value: new THREE.Vector3(1, 0.5, 1).normalize() }
+  }), [config]);
+
+  return (
+    <mesh ref={meshRef} scale={config.scale}>
+      <sphereGeometry args={[size, 64, 64]} />
+      <shaderMaterial
+        vertexShader={atmosphereVertexShader}
+        fragmentShader={atmosphereFragmentShader}
+        uniforms={uniforms}
+        transparent
+        side={THREE.BackSide}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
 
 interface ProceduralPlanetProps {
   planetType: PlanetType;
@@ -359,14 +453,21 @@ export function ProceduralPlanet({ planetType, baseColor = '#888888', size = 1.5
     }
   });
 
+  const atmosphereConfig = atmosphereConfigs[planetType];
+
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[size, 64, 64]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-      />
-    </mesh>
+    <group>
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[size, 64, 64]} />
+        <shaderMaterial
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+        />
+      </mesh>
+      {atmosphereConfig && (
+        <AtmosphereGlow config={atmosphereConfig} size={size} />
+      )}
+    </group>
   );
 }
