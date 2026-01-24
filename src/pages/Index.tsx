@@ -4,6 +4,7 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { DailyFactCard } from "@/components/DailyFactCard";
 import GurudevChatbot from "@/components/GurudevChatbot";
 import { NasaExplorer } from "@/components/NasaExplorer";
+import { SolarSystemExplorer } from "@/components/SolarSystemExplorer";
 import { useCategories } from "@/hooks/useCategories";
 import { useFeaturedObject } from "@/hooks/useCelestialObjects";
 import { getCategoryIcon } from "@/lib/icons";
@@ -76,6 +77,9 @@ const Index = () => {
             </div>
           )}
         </section>
+
+        {/* Solar System 3D Explorer */}
+        <SolarSystemExplorer />
 
         {/* NASA Database Explorer */}
         <NasaExplorer />
