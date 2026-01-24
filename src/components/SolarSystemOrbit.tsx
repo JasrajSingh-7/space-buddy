@@ -1,22 +1,19 @@
 import { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { OrbitControls, Stars, Html } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Stars, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
-import { TextureLoader } from 'three';
 
-// Planet data with orbital properties
+// Planet data with orbital properties (using colors instead of textures for reliability)
 const ORBITAL_PLANETS = [
-  { id: 'mercury', name: 'Mercury', distance: 2.5, size: 0.15, speed: 4.15, color: '#8c7853', texture: 'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg' },
-  { id: 'venus', name: 'Venus', distance: 3.2, size: 0.22, speed: 1.62, color: '#e6c87a', texture: 'https://www.solarsystemscope.com/textures/download/2k_venus_surface.jpg' },
-  { id: 'earth', name: 'Earth', distance: 4, size: 0.23, speed: 1, color: '#4a90d9', texture: 'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg' },
-  { id: 'mars', name: 'Mars', distance: 5, size: 0.18, speed: 0.53, color: '#c1440e', texture: 'https://www.solarsystemscope.com/textures/download/2k_mars.jpg' },
-  { id: 'jupiter', name: 'Jupiter', distance: 7, size: 0.5, speed: 0.084, color: '#d4a574', texture: 'https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg' },
-  { id: 'saturn', name: 'Saturn', distance: 9, size: 0.45, speed: 0.034, color: '#f4d59e', texture: 'https://www.solarsystemscope.com/textures/download/2k_saturn.jpg', hasRings: true },
-  { id: 'uranus', name: 'Uranus', distance: 11, size: 0.3, speed: 0.012, color: '#72b5c7', texture: 'https://www.solarsystemscope.com/textures/download/2k_uranus.jpg' },
-  { id: 'neptune', name: 'Neptune', distance: 13, size: 0.28, speed: 0.006, color: '#4b70dd', texture: 'https://www.solarsystemscope.com/textures/download/2k_neptune.jpg' },
+  { id: 'mercury', name: 'Mercury', distance: 2.5, size: 0.15, speed: 4.15, color: '#8c7853', emissive: '#5c5040' },
+  { id: 'venus', name: 'Venus', distance: 3.2, size: 0.22, speed: 1.62, color: '#e6c87a', emissive: '#c4a55a' },
+  { id: 'earth', name: 'Earth', distance: 4, size: 0.23, speed: 1, color: '#4a90d9', emissive: '#2d5a87' },
+  { id: 'mars', name: 'Mars', distance: 5, size: 0.18, speed: 0.53, color: '#c1440e', emissive: '#8a2f08' },
+  { id: 'jupiter', name: 'Jupiter', distance: 7, size: 0.5, speed: 0.084, color: '#d4a574', emissive: '#a67c52' },
+  { id: 'saturn', name: 'Saturn', distance: 9, size: 0.45, speed: 0.034, color: '#f4d59e', emissive: '#c4a574', hasRings: true },
+  { id: 'uranus', name: 'Uranus', distance: 11, size: 0.3, speed: 0.012, color: '#72b5c7', emissive: '#4a8a9a' },
+  { id: 'neptune', name: 'Neptune', distance: 13, size: 0.28, speed: 0.006, color: '#4b70dd', emissive: '#2d4a9a' },
 ];
-
-const SUN_TEXTURE = 'https://www.solarsystemscope.com/textures/download/2k_sun.jpg';
 
 interface OrbitingPlanetProps {
   planet: typeof ORBITAL_PLANETS[0];
@@ -28,8 +25,6 @@ function OrbitingPlanet({ planet, onClick, speedMultiplier }: OrbitingPlanetProp
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
-  
-  const texture = useLoader(TextureLoader, planet.texture);
   
   // Random starting position for variety
   const initialAngle = useMemo(() => Math.random() * Math.PI * 2, []);
@@ -47,16 +42,22 @@ function OrbitingPlanet({ planet, onClick, speedMultiplier }: OrbitingPlanetProp
 
   return (
     <group ref={groupRef}>
-      <mesh
+      <Sphere
         ref={meshRef}
+        args={[planet.size, 32, 32]}
         onClick={(e) => {
           e.stopPropagation();
           onClick(planet);
         }}
       >
-        <sphereGeometry args={[planet.size, 32, 32]} />
-        <meshStandardMaterial map={texture} />
-      </mesh>
+        <meshStandardMaterial 
+          color={planet.color}
+          emissive={planet.emissive}
+          emissiveIntensity={0.2}
+          roughness={0.8}
+          metalness={0.1}
+        />
+      </Sphere>
       
       {planet.hasRings && (
         <mesh ref={ringRef} rotation={[Math.PI / 2.2, 0, 0]}>
@@ -84,7 +85,6 @@ function OrbitRing({ distance }: { distance: number }) {
 
 function Sun() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useLoader(TextureLoader, SUN_TEXTURE);
 
   useFrame(() => {
     if (meshRef.current) {
@@ -94,15 +94,16 @@ function Sun() {
 
   return (
     <group>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[1, 64, 64]} />
-        <meshBasicMaterial map={texture} />
-      </mesh>
-      {/* Sun glow */}
-      <mesh>
-        <sphereGeometry args={[1.2, 32, 32]} />
-        <meshBasicMaterial color="#ff6600" transparent opacity={0.15} />
-      </mesh>
+      <Sphere ref={meshRef} args={[1, 64, 64]}>
+        <meshBasicMaterial color="#ffaa00" />
+      </Sphere>
+      {/* Sun glow layers */}
+      <Sphere args={[1.15, 32, 32]}>
+        <meshBasicMaterial color="#ff8800" transparent opacity={0.4} />
+      </Sphere>
+      <Sphere args={[1.3, 32, 32]}>
+        <meshBasicMaterial color="#ff6600" transparent opacity={0.2} />
+      </Sphere>
       <pointLight position={[0, 0, 0]} intensity={2} color="#ffcc66" distance={50} />
     </group>
   );
